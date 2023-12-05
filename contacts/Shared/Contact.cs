@@ -1,10 +1,13 @@
 ﻿namespace contacts.Shared;
 
-// TODO
 public class Contact
 {
-    private string FirstName { get; set; }
-    private string LastName { get; set; }
-    private string Email { get; set; }
-    private string Password { get; set; }
+    public int Id { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string Email { get; set; }
+    public string Password { get; set; }
+    public string PhoneNumber { get; set; }
+    public DateOnly BirthDate { get; set; }
+    public Category Category { get; set; }
 }
