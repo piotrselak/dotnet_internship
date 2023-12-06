@@ -2,6 +2,6 @@
 
 public enum ErrorType
 {
-    Validation,
-    NotFound
+    Validation = 400,
+    NotFound = 404
 }

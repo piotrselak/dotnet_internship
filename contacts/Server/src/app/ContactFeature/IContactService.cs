@@ -6,11 +6,10 @@ namespace contacts.Server.ContactFeature;
 // ContactService will be used as a business logic holder.
 public interface IContactService
 {
-    // This cannot fail (as empty list is also a valid response)
-    // so it returns unpacked value.
-    IEnumerable<BriefContact> GetContactList();
-    ServiceResult<Contact> GetContactDetails(int id);
-    ServiceResult<bool> RemoveContact(int id);
-    ServiceResult<bool> AddContact(Contact contact);
-    ServiceResult<bool> UpdateContact(Contact contact);
+    // It cannot fail so there is no point to wrap it in ServiceResult
+    Task<IEnumerable<BriefContact>> GetContactList();
+    Task<ServiceResult<Contact>> GetContactDetails(int id);
+    Task<ServiceResult<Empty>> RemoveContact(int id);
+    Task<ServiceResult<Empty>> AddContact(Contact contact);
+    Task<ServiceResult<Empty>> UpdateContact(Contact contact);
 }

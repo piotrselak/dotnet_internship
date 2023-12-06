@@ -12,30 +12,77 @@ public class ContactService : IContactService
         _repository = repository;
     }
     
-    public IEnumerable<BriefContact> GetContactList()
+    public async Task<IEnumerable<BriefContact>> GetContactList()
     {
-        return _repository
-            .GetContacts()
-            .Select(BriefContact.FromContact);
+        var contacts = await _repository.GetContacts();
+        return contacts.Select(BriefContact.FromContact);
     }
 
-    public ServiceResult<Contact> GetContactDetails(int id)
+    public async Task<ServiceResult<Contact>> GetContactDetails(int id)
     {
+        var contact = await _repository.GetContactById(id);
+
+        if (contact == null)
+            return new ServiceResult<Contact>
+            {
+                Succeeded = false,
+                Error = ErrorType.NotFound
+            };
+
+        return new ServiceResult<Contact>
+        {
+            Succeeded = true,
+            Data = contact
+        };
+    }
+
+    public async Task<ServiceResult<Empty>> RemoveContact(int id)
+    {
+        var contact = await _repository.GetContactById(id);
+        
+        if (contact == null)
+            return new ServiceResult<Empty>
+            {
+                Succeeded = false,
+                Error = ErrorType.NotFound
+            };
+        
+        _repository.DeleteContact(contact);
+        await _repository.SaveAsync();
+        
+        return new ServiceResult<Empty>()
+        {
+            Succeeded = true,
+            Data = new Empty()
+        };
+    }
+ 
+    public async Task<ServiceResult<Empty>> AddContact(Contact contact)
+    {
+        // TODO check if email is unique
+        // get contact by email is the right operation here
+        // var exists = await _repository.GetContactById(id);
         throw new NotImplementedException();
     }
 
-    public ServiceResult<bool> RemoveContact(int id)
+    public async Task<ServiceResult<Empty>> UpdateContact(Contact contact)
     {
-        throw new NotImplementedException();
-    }
-
-    public ServiceResult<bool> AddContact(Contact contact)
-    {
-        throw new NotImplementedException();
-    }
-
-    public ServiceResult<bool> UpdateContact(Contact contact)
-    {
-        throw new NotImplementedException();
+        var existingContact = await _repository.GetContactById(contact.Id);
+        
+        if (existingContact == null)
+            return new ServiceResult<Empty>
+            {
+                Succeeded = false,
+                Error = ErrorType.NotFound
+            };
+        
+        _repository.UpdateContact(contact);
+        await _repository.SaveAsync();
+        
+        return new ServiceResult<Empty>()
+        {
+            Succeeded = true,
+            Data = new Empty()
+        };
     }
 }
