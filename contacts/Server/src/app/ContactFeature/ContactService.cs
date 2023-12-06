@@ -59,10 +59,22 @@ public class ContactService : IContactService
  
     public async Task<ServiceResult<Empty>> AddContact(Contact contact)
     {
-        // TODO check if email is unique
-        // get contact by email is the right operation here
-        // var exists = await _repository.GetContactById(id);
-        throw new NotImplementedException();
+        var exists = await _repository.GetContactByEmail(contact.Email) != null;
+        if (exists)
+            return new ServiceResult<Empty>
+            {
+                Succeeded = false,
+                Error = ErrorType.AlreadyExists
+            };
+        
+        _repository.CreateContact(contact);
+        await _repository.SaveAsync();
+        
+        return new ServiceResult<Empty>()
+        {
+            Succeeded = true,
+            Data = new Empty()
+        };
     }
 
     public async Task<ServiceResult<Empty>> UpdateContact(Contact contact)

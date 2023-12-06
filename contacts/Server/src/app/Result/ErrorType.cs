@@ -3,5 +3,6 @@
 public enum ErrorType
 {
     Validation = 400,
-    NotFound = 404
+    NotFound = 404,
+    AlreadyExists = 409
 }
