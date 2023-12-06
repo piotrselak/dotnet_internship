@@ -7,7 +7,7 @@ namespace contacts.Server.ContactFeature;
 [Route("api/[controller]")]
 public class ContactController : ControllerBase
 {
-    public IEnumerable<Contact> GetAllContacts()
+    public IActionResult GetAllContacts()
     {
         return null;
     }

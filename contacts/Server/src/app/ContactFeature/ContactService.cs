@@ -1,4 +1,5 @@
-﻿using contacts.Shared;
+﻿using contacts.Server.Result;
+using contacts.Shared;
 
 namespace contacts.Server.ContactFeature;
 
@@ -10,7 +11,7 @@ public class ContactService : IContactService
     {
         _repository = repository;
     }
-
+    
     public IEnumerable<BriefContact> GetContactList()
     {
         return _repository
@@ -18,22 +19,22 @@ public class ContactService : IContactService
             .Select(BriefContact.FromContact);
     }
 
-    public Contact GetContactDetails(int id)
+    public ServiceResult<Contact> GetContactDetails(int id)
     {
         throw new NotImplementedException();
     }
 
-    public bool RemoveContact(int id)
+    public ServiceResult<bool> RemoveContact(int id)
     {
         throw new NotImplementedException();
     }
 
-    public bool AddContact(Contact contact)
+    public ServiceResult<bool> AddContact(Contact contact)
     {
         throw new NotImplementedException();
     }
 
-    public bool UpdateContact(Contact contact)
+    public ServiceResult<bool> UpdateContact(Contact contact)
     {
         throw new NotImplementedException();
     }
