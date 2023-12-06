@@ -11,6 +11,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<ContactsContext>(options =>
     options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IContactRepository, ContactRepository>();
+builder.Services.AddScoped<IContactService, ContactService>();
 
 var app = builder.Build();
 
