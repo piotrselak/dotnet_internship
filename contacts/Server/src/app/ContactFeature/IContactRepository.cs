@@ -7,10 +7,10 @@ namespace contacts.Server.ContactFeature;
 // Repository extends Disposable interface as we want to dispose the database connection later.
 public interface IContactRepository : IDisposable
 {
-    IEnumerable<Contact> GetContacts();
-    Contact? GetContactById(int id);
+    Task<IEnumerable<Contact>> GetContacts();
+    Task<Contact?> GetContactById(int id);
     void CreateContact(Contact contact);
-    void DeleteContact(int id);
+    void DeleteContact(Contact contact);
     void UpdateContact(Contact contact);
-    void Save();
+    Task SaveAsync();
 }

@@ -13,35 +13,34 @@ public class ContactRepository : IContactRepository
         _context = context;
     }
 
-    public IEnumerable<Contact> GetContacts()
+    public async Task<IEnumerable<Contact>> GetContacts()
     {
-        return _context.Contacts.ToList();
+        return await _context.Contacts.ToListAsync();
     }
 
-    public Contact? GetContactById(int id)
+    public async Task<Contact?> GetContactById(int id)
     {
-        return _context.Contacts.Find(id);
+        return await _context.Contacts.FindAsync(id);
     }
 
     public void CreateContact(Contact contact)
-    {
+    { 
         _context.Contacts.Add(contact);
     }
 
-    public void DeleteContact(int id)
+    public void DeleteContact(Contact contact)
     {
-        Contact contact = _context.Contacts.Find(id)!;
         _context.Contacts.Remove(contact);
     }
 
     public void UpdateContact(Contact contact)
     {
-        _context.Entry(contact).State = EntityState.Modified;
+        _context.Contacts.Update(contact);
     }
 
-    public void Save()
+    public async Task SaveAsync()
     {
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
     private bool _disposed = false;
