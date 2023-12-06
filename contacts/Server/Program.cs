@@ -1,3 +1,4 @@
+using contacts.Server.ContactFeature;
 using contacts.Server.Database;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddDbContext<ContactsContext>(options =>
     options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<IContactRepository, ContactRepository>();
 
 var app = builder.Build();
 

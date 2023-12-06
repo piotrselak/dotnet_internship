@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using contacts.Shared;
 
-namespace contacts.Server.Controllers;
+namespace contacts.Server.ContactFeature;
 
 [ApiController]
 [Route("api/[controller]")]
