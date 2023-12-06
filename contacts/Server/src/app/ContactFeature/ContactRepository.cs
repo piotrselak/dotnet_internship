@@ -23,6 +23,12 @@ public class ContactRepository : IContactRepository
         return await _context.Contacts.FindAsync(id);
     }
 
+    public async Task<Contact?> GetContactByEmail(string email)
+    {
+        return await _context.Contacts.FirstOrDefaultAsync(contact =>
+            contact.Email == email);
+    }
+    
     public void CreateContact(Contact contact)
     { 
         _context.Contacts.Add(contact);

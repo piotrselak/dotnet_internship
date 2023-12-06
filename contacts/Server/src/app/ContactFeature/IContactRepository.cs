@@ -9,6 +9,7 @@ public interface IContactRepository : IDisposable
 {
     Task<IEnumerable<Contact>> GetContacts();
     Task<Contact?> GetContactById(int id);
+    Task<Contact?> GetContactByEmail(string email);
     void CreateContact(Contact contact);
     void DeleteContact(Contact contact);
     void UpdateContact(Contact contact);
