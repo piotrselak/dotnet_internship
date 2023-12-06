@@ -1,5 +1,6 @@
 ﻿using contacts.Server.Database;
 using contacts.Shared;
+using Microsoft.EntityFrameworkCore;
 
 namespace contacts.Server.ContactFeature;
 
@@ -14,32 +15,33 @@ public class ContactRepository : IContactRepository
 
     public IEnumerable<Contact> GetContacts()
     {
-        throw new NotImplementedException();
+        return _context.Contacts.ToList();
     }
 
-    public Contact GetContactById(int id)
+    public Contact? GetContactById(int id)
     {
-        throw new NotImplementedException();
+        return _context.Contacts.Find(id);
     }
 
     public void CreateContact(Contact contact)
     {
-        throw new NotImplementedException();
+        _context.Contacts.Add(contact);
     }
 
     public void DeleteContact(int id)
     {
-        throw new NotImplementedException();
+        Contact contact = _context.Contacts.Find(id)!;
+        _context.Contacts.Remove(contact);
     }
 
     public void UpdateContact(Contact contact)
     {
-        throw new NotImplementedException();
+        _context.Entry(contact).State = EntityState.Modified;
     }
 
     public void Save()
     {
-        throw new NotImplementedException();
+        _context.SaveChanges();
     }
 
     private bool _disposed = false;
