@@ -7,6 +7,7 @@ public interface IContactService
 {
     IEnumerable<BriefContact> GetContactList();
     Contact GetContactDetails(int id);
+    
     bool RemoveContact(int id);
     bool AddContact(Contact contact);
     bool UpdateContact(Contact contact);

@@ -4,9 +4,18 @@ namespace contacts.Server.ContactFeature;
 
 public class ContactService : IContactService
 {
+    private readonly IContactRepository _repository;
+
+    public ContactService(IContactRepository repository)
+    {
+        _repository = repository;
+    }
+
     public IEnumerable<BriefContact> GetContactList()
     {
-        throw new NotImplementedException();
+        return _repository
+            .GetContacts()
+            .Select(BriefContact.FromContact);
     }
 
     public Contact GetContactDetails(int id)
