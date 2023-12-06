@@ -10,4 +10,5 @@ public class ContactsContext : DbContext
     public DbSet<Contact> Contacts { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<SubCategory> SubCategories { get; set; }
+
 }

@@ -34,12 +34,7 @@ namespace contacts.Server.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("SubCategoryId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("SubCategoryId");
 
                     b.ToTable("Categories");
                 });
@@ -78,9 +73,17 @@ namespace contacts.Server.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int?>("SubCategoryId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("SubCategoryId");
 
                     b.ToTable("Contacts");
                 });
@@ -93,22 +96,18 @@ namespace contacts.Server.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.ToTable("SubCategories");
-                });
-
-            modelBuilder.Entity("contacts.Shared.Category", b =>
-                {
-                    b.HasOne("contacts.Shared.SubCategory", "SubCategory")
-                        .WithMany()
-                        .HasForeignKey("SubCategoryId");
-
-                    b.Navigation("SubCategory");
                 });
 
             modelBuilder.Entity("contacts.Shared.Contact", b =>
@@ -119,7 +118,25 @@ namespace contacts.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("contacts.Shared.SubCategory", "SubCategory")
+                        .WithMany()
+                        .HasForeignKey("SubCategoryId");
+
                     b.Navigation("Category");
+
+                    b.Navigation("SubCategory");
+                });
+
+            modelBuilder.Entity("contacts.Shared.SubCategory", b =>
+                {
+                    b.HasOne("contacts.Shared.Category", null)
+                        .WithMany("SubCategory")
+                        .HasForeignKey("CategoryId");
+                });
+
+            modelBuilder.Entity("contacts.Shared.Category", b =>
+                {
+                    b.Navigation("SubCategory");
                 });
 #pragma warning restore 612, 618
         }

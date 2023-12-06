@@ -20,5 +20,13 @@
         <ProjectReference Include="..\Shared\contacts.Shared.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Pages\Error.cshtml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="src\app\Pages\Error.cshtml" />
+    </ItemGroup>
+
 
 </Project>
