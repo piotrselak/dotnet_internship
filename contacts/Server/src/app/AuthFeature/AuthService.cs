@@ -1,6 +1,12 @@
-﻿using contacts.Server.Result;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using contacts.Server.Result;
 using contacts.Shared;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using JwtRegisteredClaimNames =
+    Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace contacts.Server.AuthFeature;
 
@@ -9,7 +15,8 @@ public class AuthService : IAuthService
     private readonly UserManager<User> _userManager;
     private readonly IConfiguration _configuration;
 
-    public AuthService(UserManager<User> userManager, IConfiguration configuration)
+    public AuthService(UserManager<User> userManager,
+        IConfiguration configuration)
     {
         _userManager = userManager;
         _configuration = configuration;
@@ -20,7 +27,8 @@ public class AuthService : IAuthService
     {
         // We don't have to check if UserName is null here as we do it in controller
         var exists =
-            await _userManager.FindByNameAsync(registerRequest.UserName!) != null;
+            await _userManager.FindByNameAsync(registerRequest.Username!) !=
+            null;
         if (exists)
             return new Result<string>
             {
@@ -30,7 +38,7 @@ public class AuthService : IAuthService
             };
         User user = new User
         {
-            UserName = registerRequest.UserName,
+            UserName = registerRequest.Username,
             SecurityStamp = Guid.NewGuid().ToString()
         };
 
@@ -38,7 +46,6 @@ public class AuthService : IAuthService
             await _userManager.CreateAsync(user, registerRequest.Password!);
 
         if (!result.Succeeded)
-            // TODO! Refactor service error handling as we can't see the messages
             return new Result<string>
             {
                 Succeeded = false,
@@ -48,13 +55,51 @@ public class AuthService : IAuthService
 
         return await Login(new LoginRequest
         {
-            Username = registerRequest.UserName,
+            Username = registerRequest.Username,
             Password = registerRequest.Password
         });
     }
 
     public async Task<Result<string>> Login(LoginRequest loginRequest)
     {
-        throw new NotImplementedException();
+        User? user = await _userManager.FindByNameAsync(loginRequest.Username!);
+
+        if (user == null)
+            return new Result<string>
+            {
+                Succeeded = false,
+                Error = new Error(401,
+                    "Username or password is incorrect.")
+            };
+
+        var authClaims = new List<Claim>
+        {
+            new(ClaimTypes.Name, user.UserName!),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        };
+
+        var token = GetToken(authClaims);
+        return new Result<string>
+        {
+            Succeeded = true,
+            Data = new JwtSecurityTokenHandler().WriteToken(token),
+        };
+    }
+
+    private JwtSecurityToken GetToken(IEnumerable<Claim> authClaims)
+    {
+        var authSigningKey =
+            new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+
+        var token = new JwtSecurityToken(
+            issuer: _configuration["JWT:ValidIssuer"],
+            audience: _configuration["JWT:ValidAudience"],
+            expires: DateTime.Now.AddHours(2),
+            claims: authClaims,
+            signingCredentials: new SigningCredentials(authSigningKey,
+                SecurityAlgorithms.HmacSha256));
+
+        return token;
     }
 }

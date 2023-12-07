@@ -19,25 +19,33 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
     {
-        throw new NotImplementedException();
+        if (loginRequest.Password == null ||
+            loginRequest.Username == null)
+            return BadRequest("Password or username cannot be empty.");
+
+        var response = await _authService.Login(loginRequest);
+
+        if (response is { Succeeded: false, Error: not null })
+            return Problem(detail: response.Error.Description,
+                statusCode: response.Error.Code);
+
+        return Ok(response.Data);
     }
 
     [AllowAnonymous]
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterRequest registerRequest)
+    public async Task<IActionResult> Register(
+        [FromBody] RegisterRequest registerRequest)
     {
         if (registerRequest.Password == null ||
-            registerRequest.UserName == null)
-            return BadRequest();
-        
+            registerRequest.Username == null)
+            return BadRequest("Password or username cannot be empty.");
+
         var response = await _authService.Register(registerRequest);
 
-        if (!response.Succeeded)
-        {
-            // TODO Error handling
-            
-            // return Ok(response.Message); // bad
-        }
+        if (response is { Succeeded: false, Error: not null })
+            return Problem(detail: response.Error.Description,
+                statusCode: response.Error.Code);
 
         return Ok(response.Data);
     }
