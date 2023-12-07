@@ -36,7 +36,7 @@ public class AuthController : ControllerBase
         {
             // TODO Error handling
             
-            return Ok(response.Message); // bad
+            // return Ok(response.Message); // bad
         }
 
         return Ok(response.Data);

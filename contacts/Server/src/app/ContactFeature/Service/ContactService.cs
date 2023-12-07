@@ -1,7 +1,8 @@
-﻿using contacts.Server.Result;
+﻿using contacts.Server.ContactFeature.Repository;
+using contacts.Server.Result;
 using contacts.Shared;
 
-namespace contacts.Server.ContactFeature;
+namespace contacts.Server.ContactFeature.Service;
 
 public class ContactService : IContactService
 {
@@ -18,80 +19,81 @@ public class ContactService : IContactService
         return contacts.Select(BriefContact.FromContact);
     }
 
-    public async Task<ServiceResult<Contact>> GetContactDetails(int id)
+    public async Task<Result<Contact>> GetContactDetails(int id)
     {
         var contact = await _repository.GetContactById(id);
 
         if (contact == null)
-            return new ServiceResult<Contact>
+            return new Result<Contact>
             {
                 Succeeded = false,
-                Error = ErrorType.NotFound
+                Error = new Error(404, "Contact not found")
             };
 
-        return new ServiceResult<Contact>
+        return new Result<Contact>
         {
             Succeeded = true,
             Data = contact
         };
     }
 
-    public async Task<ServiceResult<Empty>> RemoveContact(int id)
+    public async Task<Result<Empty>> RemoveContact(int id)
     {
         var contact = await _repository.GetContactById(id);
         
         if (contact == null)
-            return new ServiceResult<Empty>
+            return new Result<Empty>
             {
                 Succeeded = false,
-                Error = ErrorType.NotFound
+                Error = new Error(404, "Contact not found")
             };
         
         _repository.DeleteContact(contact);
         await _repository.SaveAsync();
         
-        return new ServiceResult<Empty>()
+        return new Result<Empty>()
         {
             Succeeded = true,
             Data = new Empty()
         };
     }
  
-    public async Task<ServiceResult<Empty>> AddContact(Contact contact)
+    public async Task<Result<Empty>> AddContact(Contact contact)
     {
         var exists = await _repository.GetContactByEmail(contact.Email) != null;
         if (exists)
-            return new ServiceResult<Empty>
+            return new Result<Empty>
             {
                 Succeeded = false,
-                Error = ErrorType.AlreadyExists
+                Error = new Error(409,
+                    "Contact with given email already exists")
             };
         
         _repository.CreateContact(contact);
         await _repository.SaveAsync();
         
-        return new ServiceResult<Empty>()
+        return new Result<Empty>()
         {
             Succeeded = true,
             Data = new Empty()
         };
     }
 
-    public async Task<ServiceResult<Empty>> UpdateContact(Contact contact)
+    public async Task<Result<Empty>> UpdateContact(Contact contact)
     {
         var existingContact = await _repository.GetContactById(contact.Id);
         
         if (existingContact == null)
-            return new ServiceResult<Empty>
+            return new Result<Empty>
             {
                 Succeeded = false,
-                Error = ErrorType.NotFound
+                Error = new Error(404, "Contact not found")
             };
         
         _repository.UpdateContact(contact);
         await _repository.SaveAsync();
         
-        return new ServiceResult<Empty>()
+        return new Result<Empty>()
         {
             Succeeded = true,
             Data = new Empty()

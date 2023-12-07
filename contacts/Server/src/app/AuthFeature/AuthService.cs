@@ -16,16 +16,17 @@ public class AuthService : IAuthService
     }
 
     // TODO Check password strength
-    public async Task<ServiceResult<string>> Register(RegisterRequest registerRequest)
+    public async Task<Result<string>> Register(RegisterRequest registerRequest)
     {
         // We don't have to check if UserName is null here as we do it in controller
         var exists =
             await _userManager.FindByNameAsync(registerRequest.UserName!) != null;
         if (exists)
-            return new ServiceResult<string>
+            return new Result<string>
             {
                 Succeeded = false,
-                Error = ErrorType.AlreadyExists
+                Error = new Error(409,
+                    "User with given user name already exists")
             };
         User user = new User
         {
@@ -38,11 +39,11 @@ public class AuthService : IAuthService
 
         if (!result.Succeeded)
             // TODO! Refactor service error handling as we can't see the messages
-            return new ServiceResult<string>
+            return new Result<string>
             {
                 Succeeded = false,
-                Error = ErrorType.Other,
-                Message = result.Errors.First().Description
+                Error = new Error(400,
+                    "User name or password incorrect")
             };
 
         return await Login(new LoginRequest
@@ -52,7 +53,7 @@ public class AuthService : IAuthService
         });
     }
 
-    public async Task<ServiceResult<string>> Login(LoginRequest loginRequest)
+    public async Task<Result<string>> Login(LoginRequest loginRequest)
     {
         throw new NotImplementedException();
     }

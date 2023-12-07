@@ -30,5 +30,9 @@
       <AdditionalFiles Include="src\app\Pages\Error.cshtml" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="src\app\ContactFeature\Service\Result\" />
+    </ItemGroup>
+
 
 </Project>

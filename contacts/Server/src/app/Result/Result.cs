@@ -5,12 +5,11 @@
 // exceptions for the flow of the http errors.
 // If operations cannot fail (unless something critical happens) service should return
 // unpacked values.
-public class ServiceResult<TData>
+public class Result<TData>
 {
-    public bool Succeeded { get; set; }
-    public TData? Data { get; set; }
-    public ErrorType? Error { get; set; }
-    public string? Message { get; set; }
+    public bool Succeeded { get; init; }
+    public TData? Data { get; init; }
+    public Error? Error { get; init; }
 }
 
 // This class is used when there is no Data but operation succeeded.

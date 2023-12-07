@@ -1,6 +1,8 @@
 using System.Text;
 using contacts.Server.AuthFeature;
 using contacts.Server.ContactFeature;
+using contacts.Server.ContactFeature.Repository;
+using contacts.Server.ContactFeature.Service;
 using contacts.Server.Database;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;

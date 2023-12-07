@@ -1,6 +1,6 @@
 ﻿using contacts.Shared;
 
-namespace contacts.Server.ContactFeature;
+namespace contacts.Server.ContactFeature.Repository;
 
 // To implement database operations, I used the repository pattern.
 // It abstracts data to collection-like being.

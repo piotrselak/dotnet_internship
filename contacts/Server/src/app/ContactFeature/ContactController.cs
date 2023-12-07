@@ -1,3 +1,4 @@
+using contacts.Server.ContactFeature.Service;
 using Microsoft.AspNetCore.Mvc;
 using contacts.Shared;
 using Microsoft.AspNetCore.Authorization;
