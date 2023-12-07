@@ -15,7 +15,7 @@ public class ContactController : ControllerBase
     {
         _contactService = contactService;
     }
-    
+
     [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetAllContacts()
@@ -24,11 +24,29 @@ public class ContactController : ControllerBase
         return Ok(fullList);
     }
 
-    // TODO debug only
-    [Authorize]
+    [AllowAnonymous]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetContact(int id)
     {
-        return Ok("Works only for logged");
+        var response = await _contactService.GetContactDetails(id);
+
+        if (response is { Succeeded: false, Error: not null })
+            return Problem(detail: response.Error.Description,
+                statusCode: response.Error.Code);
+
+        return Ok(response.Data);
+    }
+
+    [Authorize]
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteContact(int id)
+    {
+        var response = await _contactService.RemoveContact(id);
+
+        if (response is { Succeeded: false, Error: not null })
+            return Problem(detail: response.Error.Description,
+                statusCode: response.Error.Code);
+
+        return Ok(response.Data);
     }
 }
