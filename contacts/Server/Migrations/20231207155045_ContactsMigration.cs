@@ -4,10 +4,12 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace contacts.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class contactsMigration : Migration
+    public partial class ContactsMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -32,7 +34,7 @@ namespace contacts.Server.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    CategoryId = table.Column<int>(type: "integer", nullable: true)
+                    CategoryId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -41,7 +43,8 @@ namespace contacts.Server.Migrations
                         name: "FK_SubCategories_Categories_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Categories",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -73,6 +76,42 @@ namespace contacts.Server.Migrations
                         column: x => x.SubCategoryId,
                         principalTable: "SubCategories",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.InsertData(
+                table: "Categories",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Business" },
+                    { 2, "Private" },
+                    { 3, "Other" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Contacts",
+                columns: new[] { "Id", "BirthDate", "CategoryId", "Email", "FirstName", "LastName", "Password", "PhoneNumber", "SubCategoryId" },
+                values: new object[] { 2, new DateOnly(1985, 5, 10), 2, "jane@example.com", "Jane", "Smith", "dskaKA!@23L", "9876543210", null });
+
+            migrationBuilder.InsertData(
+                table: "SubCategories",
+                columns: new[] { "Id", "CategoryId", "Name" },
+                values: new object[,]
+                {
+                    { 1, 1, "Boss" },
+                    { 2, 1, "Client" },
+                    { 3, 1, "Coworker" },
+                    { 4, 3, "Family" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Contacts",
+                columns: new[] { "Id", "BirthDate", "CategoryId", "Email", "FirstName", "LastName", "Password", "PhoneNumber", "SubCategoryId" },
+                values: new object[,]
+                {
+                    { 1, new DateOnly(1990, 1, 1), 1, "john@example.com", "John", "Doe", "dashAJS@12J", "1234567890", 1 },
+                    { 3, new DateOnly(1995, 8, 20), 1, "alice@example.com", "Alice", "Johnson", "dsaj!@#jdsaAS", "5555555555", 2 },
+                    { 4, new DateOnly(1988, 11, 15), 3, "bob@example.com", "Bob", "Anderson", "dsJAJ@#j4A", "1111111111", 4 }
                 });
 
             migrationBuilder.CreateIndex(

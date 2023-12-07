@@ -12,8 +12,8 @@ using contacts.Server.Database;
 namespace contacts.Server.Migrations
 {
     [DbContext(typeof(ContactsContext))]
-    [Migration("20231206233453_contactsMigration")]
-    partial class contactsMigration
+    [Migration("20231207155045_ContactsMigration")]
+    partial class ContactsMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,6 +40,23 @@ namespace contacts.Server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Business"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Private"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Other"
+                        });
                 });
 
             modelBuilder.Entity("contacts.Shared.Contact", b =>
@@ -89,6 +106,55 @@ namespace contacts.Server.Migrations
                     b.HasIndex("SubCategoryId");
 
                     b.ToTable("Contacts");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            BirthDate = new DateOnly(1990, 1, 1),
+                            CategoryId = 1,
+                            Email = "john@example.com",
+                            FirstName = "John",
+                            LastName = "Doe",
+                            Password = "dashAJS@12J",
+                            PhoneNumber = "1234567890",
+                            SubCategoryId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            BirthDate = new DateOnly(1985, 5, 10),
+                            CategoryId = 2,
+                            Email = "jane@example.com",
+                            FirstName = "Jane",
+                            LastName = "Smith",
+                            Password = "dskaKA!@23L",
+                            PhoneNumber = "9876543210"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            BirthDate = new DateOnly(1995, 8, 20),
+                            CategoryId = 1,
+                            Email = "alice@example.com",
+                            FirstName = "Alice",
+                            LastName = "Johnson",
+                            Password = "dsaj!@#jdsaAS",
+                            PhoneNumber = "5555555555",
+                            SubCategoryId = 2
+                        },
+                        new
+                        {
+                            Id = 4,
+                            BirthDate = new DateOnly(1988, 11, 15),
+                            CategoryId = 3,
+                            Email = "bob@example.com",
+                            FirstName = "Bob",
+                            LastName = "Anderson",
+                            Password = "dsJAJ@#j4A",
+                            PhoneNumber = "1111111111",
+                            SubCategoryId = 4
+                        });
                 });
 
             modelBuilder.Entity("contacts.Shared.SubCategory", b =>
@@ -99,7 +165,7 @@ namespace contacts.Server.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CategoryId")
+                    b.Property<int>("CategoryId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")
@@ -111,6 +177,32 @@ namespace contacts.Server.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("SubCategories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CategoryId = 1,
+                            Name = "Boss"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CategoryId = 1,
+                            Name = "Client"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CategoryId = 1,
+                            Name = "Coworker"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CategoryId = 3,
+                            Name = "Family"
+                        });
                 });
 
             modelBuilder.Entity("contacts.Shared.Contact", b =>
@@ -132,14 +224,13 @@ namespace contacts.Server.Migrations
 
             modelBuilder.Entity("contacts.Shared.SubCategory", b =>
                 {
-                    b.HasOne("contacts.Shared.Category", null)
-                        .WithMany("SubCategory")
-                        .HasForeignKey("CategoryId");
-                });
+                    b.HasOne("contacts.Shared.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-            modelBuilder.Entity("contacts.Shared.Category", b =>
-                {
-                    b.Navigation("SubCategory");
+                    b.Navigation("Category");
                 });
 #pragma warning restore 612, 618
         }
