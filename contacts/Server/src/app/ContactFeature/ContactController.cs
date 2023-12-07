@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using contacts.Shared;
+using Microsoft.AspNetCore.Authorization;
 
 namespace contacts.Server.ContactFeature;
 
@@ -13,11 +14,21 @@ public class ContactController : ControllerBase
     {
         _contactService = contactService;
     }
-
+    
+    [AllowAnonymous]
+    [HttpGet]
     public async Task<IActionResult> GetAllContacts()
     {
         var fullList = await _contactService.GetContactList();
         return Ok(fullList);
     }
+
+    // TODO debug only
     
+    [Authorize]
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetContact(int id)
+    {
+        return Ok("Works only for logged");
+    }
 }
