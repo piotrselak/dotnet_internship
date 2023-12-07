@@ -7,8 +7,17 @@ namespace contacts.Server.ContactFeature;
 [Route("api/[controller]")]
 public class ContactController : ControllerBase
 {
-    public IActionResult GetAllContacts()
+    private readonly IContactService _contactService;
+
+    public ContactController(IContactService contactService)
     {
-        return null;
+        _contactService = contactService;
     }
+
+    public async Task<IActionResult> GetAllContacts()
+    {
+        var fullList = await _contactService.GetContactList();
+        return Ok(fullList);
+    }
+    
 }
