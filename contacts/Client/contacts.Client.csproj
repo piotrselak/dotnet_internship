@@ -15,9 +15,4 @@
         <ProjectReference Include="..\Shared\contacts.Shared.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Pages\" />
-      <Folder Include="Shared\" />
-    </ItemGroup>
-
 </Project>
