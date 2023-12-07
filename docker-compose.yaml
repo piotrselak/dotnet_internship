@@ -2,7 +2,7 @@
 
 services:
   postgres:
-    build: ./db_setup
+    image: postgres
     ports:
       - "5432:5432"
     volumes:
@@ -10,18 +10,4 @@ services:
     environment:
       - POSTGRES_PASSWORD=secret
       - POSTGRES_USER=pguser
-      - POSTGRES_MULTIPLE_DBS=contacts_db,keycloak
-  keycloak:
-    image: quay.io/keycloak/keycloak:20.0
-    environment:
-      - DB_VENDOR=POSTGRES
-      - DB_ADDR=postgres
-      - DB_DATABASE=keycloak
-      - DB_USER=pguser
-      - DB_SCHEMA=public
-      - DB_PASSWORD=secret
-      - KEYCLOAK_ADMIN=admin
-      - KEYCLOAK_ADMIN_PASSWORD=admin
-    ports:
-      - "8080:8080"
-    command: [ "start-dev" ]
+      - POSTGRES_DB=contacts_db
