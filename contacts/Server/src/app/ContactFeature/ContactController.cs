@@ -24,7 +24,6 @@ public class ContactController : ControllerBase
     }
 
     // TODO debug only
-    
     [Authorize]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetContact(int id)

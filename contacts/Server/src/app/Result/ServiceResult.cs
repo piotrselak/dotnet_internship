@@ -10,6 +10,7 @@ public class ServiceResult<TData>
     public bool Succeeded { get; set; }
     public TData? Data { get; set; }
     public ErrorType? Error { get; set; }
+    public string? Message { get; set; }
 }
 
 // This class is used when there is no Data but operation succeeded.
