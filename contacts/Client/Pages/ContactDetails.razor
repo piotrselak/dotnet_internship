@@ -1,0 +1,75 @@
+﻿@page "/list/{Id:int}"
+@using contacts.Client.Services
+@using contacts.Shared
+@inject IContactService ContactService
+@inject ILogger<ContactDetails> Logger
+
+@if (_error.Length > 0)
+{
+    <h3>@_error</h3>
+}
+else if (_contact != null)
+{
+    <div>
+        <h3>Contact Details</h3>
+        <div>
+            <p>
+                <strong>First Name:</strong> @_contact.FirstName
+            </p>
+        </div>
+        <div>
+            <p>
+                <strong>Last Name:</strong> @_contact.LastName
+            </p>
+        </div>
+        <div>
+            <p>
+                <strong>Email:</strong> @_contact.Email
+            </p>
+        </div>
+        <div>
+            <p>
+                <strong>Password:</strong> @_contact.Password
+            </p>
+        </div>
+        <div>
+            <p>
+                <strong>Phone Number:</strong> @_contact.PhoneNumber
+            </p>
+        </div>
+        <div>
+            <p>
+                <strong>Birth Date:</strong> @_contact.BirthDate.ToString()
+            </p>
+        </div>
+    </div>
+}
+else
+{
+    <h3>Please wait...</h3>
+}
+
+@code {
+    // TODO Add categories handling here too (or in service)
+    [Parameter]
+    public int Id { get; set; }
+
+    private string _error = "";
+    Contact? _contact = null;
+
+    protected override async void OnInitialized()
+    {
+        var res = await ContactService.GetContactById(Id);
+        Logger.LogInformation(res.Succeeded.ToString());
+        if (res.Succeeded)
+        {
+            _contact = res.Data;
+            Logger.LogInformation(_contact!.FirstName);
+            StateHasChanged();
+            return;
+        }
+        _error = res.Error!.Description;
+        StateHasChanged();
+    }
+
+}

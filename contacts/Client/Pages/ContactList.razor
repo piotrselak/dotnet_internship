@@ -9,7 +9,12 @@
         @foreach (var contact in _contacts)
         {
             <li>
-                @contact.FirstName @contact.LastName @contact.Email
+                <p>
+                    @contact.FirstName
+                    @contact.LastName
+                    @contact.Email
+                    <a href="/list/@contact.Id">Details</a>
+                </p>
             </li>
         }
     </ul>
@@ -18,9 +23,10 @@
 
 @code {
     private IEnumerable<BriefContact> _contacts;
-    
+
     protected override async Task OnInitializedAsync()
     {
         _contacts = await ContactService.GetContacts();
     }
+
 }

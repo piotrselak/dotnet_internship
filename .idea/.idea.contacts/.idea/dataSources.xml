@@ -9,5 +9,13 @@
       <jdbc-url>jdbc:postgresql://localhost:5432/contacts_db?password=secret&amp;user=pguser</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="auth_db@localhost" uuid="332a89f2-cd95-4f58-90a5-a14e0b91ea2a">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <configured-by-url>true</configured-by-url>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost:5432/auth_db?password=secret&amp;user=pguser</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>

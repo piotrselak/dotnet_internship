@@ -1,4 +1,4 @@
-﻿namespace contacts.Server.Result;
+﻿namespace contacts.Shared.Result;
 
 // Class used to provide results of Service layer operations if operations may fail,
 // as I want to separate HTTP results from service layer. I also don't want to use

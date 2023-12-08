@@ -1,5 +1,5 @@
-﻿using contacts.Server.Result;
-using contacts.Shared;
+﻿using contacts.Shared;
+using contacts.Shared.Result;
 
 namespace contacts.Server.AuthFeature;
 
