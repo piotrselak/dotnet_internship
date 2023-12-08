@@ -19,8 +19,8 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
     {
-        if (loginRequest.Password == null ||
-            loginRequest.Username == null)
+        if (string.IsNullOrEmpty(loginRequest.Username) ||
+            string.IsNullOrEmpty(loginRequest.Password))
             return BadRequest("Password or username cannot be empty.");
 
         var response = await _authService.Login(loginRequest);

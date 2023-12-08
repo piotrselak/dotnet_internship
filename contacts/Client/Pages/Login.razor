@@ -1,0 +1,60 @@
+﻿@inject ILogger<Login> Logger
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+@page "/login"
+@using Microsoft.Extensions.Options
+
+<div>
+    <h3>Login</h3>
+    <EditForm Model="@_loginRequest" OnSubmit="@FormSubmitted">
+        <label>
+            Name:
+            <InputText @bind-Value="_loginRequest.Username"/>
+        </label>
+        <label>
+            Password
+            <InputText @bind-Value="_loginRequest.Password" type="password"/>
+        </label>
+        <input type="submit" value="Submit" class="btn btn-primary"/>
+    </EditForm>
+    @if (_error.Length > 0)
+    {
+        <div class="alert alert-danger" role="alert">
+            @_error
+        </div>
+    }
+</div>
+
+@code {
+    LoginRequest _loginRequest = new LoginRequest();
+    string _error = "";
+
+    private async void FormSubmitted()
+    {
+        bool validationRes = Validate();
+        if (!validationRes) return;
+
+        var res = await AuthService.Login(_loginRequest);
+
+        if (res.Succeeded)
+            NavigationManager.NavigateTo("/");
+        else
+        {
+            _error = res.Error!.Description;
+            StateHasChanged();
+        }
+    }
+
+    private bool Validate()
+    {
+        if (string.IsNullOrEmpty(_loginRequest.Username)
+            || string.IsNullOrEmpty(_loginRequest.Password))
+        {
+            _error = "Username and password cannot be empty.";
+            return false;
+        }
+
+        return true;
+    }
+
+}

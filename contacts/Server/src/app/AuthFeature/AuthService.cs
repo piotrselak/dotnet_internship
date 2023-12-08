@@ -72,6 +72,16 @@ public class AuthService : IAuthService
                     "Username or password is incorrect.")
             };
 
+        var passwordCheck =
+            await _userManager.CheckPasswordAsync(user, loginRequest.Password!);
+        if (!passwordCheck)
+            return new Result<string>
+            {
+                Succeeded = false,
+                Error = new Error(401,
+                    "Username or password is incorrect.")
+            };
+
         var authClaims = new List<Claim>
         {
             new(ClaimTypes.Name, user.UserName!),
