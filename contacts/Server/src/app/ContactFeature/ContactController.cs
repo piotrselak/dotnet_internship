@@ -49,4 +49,18 @@ public class ContactController : ControllerBase
 
         return Ok(response.Data);
     }
+
+    [Authorize]
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> UpdateContract()
+    {
+        throw new NotImplementedException();
+    }
+
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> PostContract()
+    {
+        throw new NotImplementedException();
+    }
 }
