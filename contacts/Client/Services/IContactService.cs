@@ -7,4 +7,5 @@ public interface IContactService
 {
     Task<IEnumerable<BriefContact>> GetContacts();
     Task<Result<Contact>> GetContactById(int id);
+    Task<Result<Empty>> DeleteContact(int id);
 }

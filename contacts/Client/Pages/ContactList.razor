@@ -14,6 +14,11 @@
                     @contact.LastName
                     @contact.Email
                     <a href="/list/@contact.Id">Details</a>
+                    <AuthorizeView>
+                        <Authorized>
+                            <button @onclick="@(() => DeleteContact(contact.Id))">Delete</button>
+                        </Authorized>
+                    </AuthorizeView>
                 </p>
             </li>
         }
@@ -27,6 +32,12 @@
     protected override async Task OnInitializedAsync()
     {
         _contacts = await ContactService.GetContacts();
+    }
+
+    private async void DeleteContact(int id)
+    {
+        await ContactService.DeleteContact(id);
+        StateHasChanged();
     }
 
 }

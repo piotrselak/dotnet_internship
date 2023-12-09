@@ -38,4 +38,22 @@ public class ContactService : IContactService
             Data = await res.Content.ReadFromJsonAsync<Contact>(),
         };
     }
+
+    public async Task<Result<Empty>> DeleteContact(int id)
+    {
+        var res = await _httpClient.DeleteAsync($"api/Contact/{id}");
+        if (!res.IsSuccessStatusCode)
+            return new Result<Empty>
+            {
+                Succeeded = false,
+                Error = new Error((int)res.StatusCode,
+                    (await res.Content.ReadFromJsonAsync<ErrorResponse>())!
+                    .Detail)
+            };
+        return new Result<Empty>
+        {
+            Succeeded = true,
+            Data = new Empty()
+        };
+    }
 }
