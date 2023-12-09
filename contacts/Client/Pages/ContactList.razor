@@ -16,6 +16,7 @@
                     <a href="/list/@contact.Id">Details</a>
                     <AuthorizeView>
                         <Authorized>
+                            <a href="/contact/@contact.Id">Modify</a>
                             <button @onclick="@(() => DeleteContact(contact.Id))">Delete</button>
                         </Authorized>
                     </AuthorizeView>

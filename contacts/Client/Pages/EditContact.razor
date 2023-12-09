@@ -1,0 +1,93 @@
+﻿@page "/contact/{Id:int?}"
+@inject IContactService ContactService
+<AuthorizeView>
+    <Authorized>
+        <div>
+            <EditForm Context="formContext" Model="@_contact" OnSubmit="@FormSubmitted">
+                <div class="form-group">
+                    <label for="firstName">First Name:</label>
+                    <InputText @bind-Value="_contact.FirstName" id="firstName" class="form-control"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="lastName">Last Name:</label>
+                    <InputText @bind-Value="_contact.LastName" id="lastName" class="form-control"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <InputText @bind-Value="_contact.Email" id="email" class="form-control"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <InputText @bind-Value="_contact.Password" id="password" class="form-control"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="phoneNumber">Phone Number:</label>
+                    <InputText @bind-Value="_contact.PhoneNumber" id="phoneNumber" class="form-control"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="birthDate">Birth Date:</label>
+                    <InputDate @bind-Value="_contact.BirthDate" id="birthDate" class="form-control"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="categoryId">Category ID:</label>
+                    <InputNumber @bind-Value="_contact.CategoryId" id="categoryId" class="form-control"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="subCategoryId">SubCategory ID:</label>
+                    <InputNumber @bind-Value="_contact.SubCategoryId" id="subCategoryId" class="form-control"/>
+                </div>
+                <input type="submit" value="Submit" class="btn btn-primary"/>
+            </EditForm>
+            @if (!string.IsNullOrEmpty(error))
+            {
+                <div class="alert alert-danger" role="alert">
+                    @error
+                </div>
+            }
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <h3>You don't have permission to modify contacts.</h3>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    Contact _contact = new Contact();
+    string error = "";
+
+    [Parameter]
+    public int? Id { get; set; }
+
+    protected override async void OnInitialized()
+    {
+        if (Id == null)
+        {
+        }
+        else
+        {
+            int id = (int)Id!;
+            var result = await ContactService.GetContactById(id);
+            if (!result.Succeeded)
+            {
+                error = result.Error!.Description;
+            }
+            else
+            {
+                _contact = result.Data!;
+            }
+            StateHasChanged();
+        }
+    }
+
+    private async void FormSubmitted()
+    {
+    }
+
+}
