@@ -1,10 +1,9 @@
-﻿@inject ILogger<Login> Logger
-@inject IAuthService AuthService
+﻿@inject IAuthService AuthService
 @inject NavigationManager NavigationManager
-@page "/login"
+@page "/register"
 
 <div>
-    <h3>Login</h3>
+    <h3>Register</h3>
     <EditForm Model="@_loginRequest" OnSubmit="@FormSubmitted">
         <label>
             Name:
@@ -33,10 +32,13 @@
         bool validationRes = Validate();
         if (!validationRes) return;
 
-        var res = await AuthService.Login(_loginRequest);
+        var res = await AuthService.Register(_loginRequest);
 
         if (res.Succeeded)
+        {
+            StateHasChanged();
             NavigationManager.NavigateTo("/");
+        }
         else
         {
             _error = res.Error!.Description;
@@ -44,7 +46,7 @@
         }
     }
 
-    private bool Validate()
+    private bool Validate() // TODO: more
     {
         if (string.IsNullOrEmpty(_loginRequest.Username)
             || string.IsNullOrEmpty(_loginRequest.Password))
@@ -52,7 +54,7 @@
             _error = "Username and password cannot be empty.";
             return false;
         }
-
+        _error = "";
         return true;
     }
 

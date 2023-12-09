@@ -64,7 +64,7 @@ public class AuthService : IAuthService
         return result;
     }
 
-    public async Task<Result<string>> Register(RegisterRequest request)
+    public async Task<Result<string>> Register(LoginRequest request)
     {
         var stringContent = new StringContent(
             JsonSerializer.Serialize(request), Encoding.UTF8,
@@ -85,7 +85,7 @@ public class AuthService : IAuthService
         var result = new Result<string>
         {
             Succeeded = true,
-            Data = await res.Content.ReadFromJsonAsync<string>()
+            Data = await res.Content.ReadAsStringAsync()
         };
 
         await _localStorage.SetItemAsync("token", result.Data);

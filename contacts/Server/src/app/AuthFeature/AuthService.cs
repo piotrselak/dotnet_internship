@@ -46,12 +46,18 @@ public class AuthService : IAuthService
             await _userManager.CreateAsync(user, registerRequest.Password!);
 
         if (!result.Succeeded)
+        {
+            var errors = result.Errors;
+            string parsedErrors = errors.Aggregate("",
+                (current, e) => current + (e.Description + ". "));
+
             return new Result<string>
             {
                 Succeeded = false,
-                Error = new Error(400,
-                    "User name or password incorrect")
+                Error = new Error(400, parsedErrors)
             };
+        }
+
 
         return await Login(new LoginRequest
         {
