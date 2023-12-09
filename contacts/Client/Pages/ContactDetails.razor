@@ -42,6 +42,19 @@ else if (_contact != null)
                 <strong>Birth Date:</strong> @_contact.BirthDate.ToString()
             </p>
         </div>
+        <div>
+            <p>
+                <strong>Category:</strong> @_contact.Category.Name
+            </p>
+        </div>
+        @if (_contact.SubCategory != null)
+        {
+            <div>
+                <p>
+                    <strong>Subcategory:</strong> @_contact.SubCategory!.Name
+                </p>
+            </div>
+        }
     </div>
 }
 else
@@ -50,7 +63,7 @@ else
 }
 
 @code {
-    // TODO Add categories handling here too (or in service)
+
     [Parameter]
     public int Id { get; set; }
 
@@ -64,7 +77,7 @@ else
         if (res.Succeeded)
         {
             _contact = res.Data;
-            Logger.LogInformation(_contact!.FirstName);
+            Logger.LogInformation(_contact!.Category.Id.ToString());
             StateHasChanged();
             return;
         }

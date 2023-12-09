@@ -7,10 +7,13 @@ namespace contacts.Server.ContactFeature.Service;
 public class ContactService : IContactService
 {
     private readonly IContactRepository _repository;
+    private readonly ILogger<ContactService> _logger;
 
-    public ContactService(IContactRepository repository)
+    public ContactService(IContactRepository repository,
+        ILogger<ContactService> logger)
     {
         _repository = repository;
+        _logger = logger;
     }
 
     public async Task<IEnumerable<BriefContact>> GetContactList()
@@ -29,7 +32,7 @@ public class ContactService : IContactService
                 Succeeded = false,
                 Error = new Error(404, "Contact not found")
             };
-
+        _logger.LogInformation(contact.Category.Name);
         return new Result<Contact>
         {
             Succeeded = true,
