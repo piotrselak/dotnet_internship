@@ -1,5 +1,5 @@
 using System.Text;
-using contacts.Server.AuthFeature;
+using contacts.Server.Auth;
 using contacts.Server.CategoryFeature;
 using contacts.Server.CategoryFeature.Repository;
 using contacts.Server.CategoryFeature.Service;

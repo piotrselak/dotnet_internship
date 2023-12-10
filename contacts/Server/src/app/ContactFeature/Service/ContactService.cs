@@ -5,6 +5,7 @@ using contacts.Server.ContactFeature.Repository;
 using contacts.Shared;
 using contacts.Shared.Result;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace contacts.Server.ContactFeature.Service;
 
@@ -125,6 +126,7 @@ public class ContactService : IContactService
         }
         catch (DbUpdateException e)
         {
+            _logger.LogInformation("Yep");
             return new Result<Empty>
             {
                 Succeeded = false,

@@ -1,7 +1,0 @@
-﻿namespace contacts.Shared;
-
-public class RegisterRequest
-{
-    public string? Username { get; set; }
-    public string? Password { get; set; }
-}
