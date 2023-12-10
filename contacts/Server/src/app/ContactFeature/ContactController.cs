@@ -52,15 +52,28 @@ public class ContactController : ControllerBase
 
     [Authorize]
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> UpdateContract()
+    public async Task<IActionResult> UpdateContract([FromBody] Contact contact,
+        int id)
     {
-        throw new NotImplementedException();
+        var response = await _contactService.UpdateContact(contact);
+
+        if (response is { Succeeded: false, Error: not null })
+            return Problem(detail: response.Error.Description,
+                statusCode: response.Error.Code);
+
+        return Ok();
     }
 
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult> PostContract()
+    public async Task<IActionResult> PostContract([FromBody] Contact contact)
     {
-        throw new NotImplementedException();
+        var response = await _contactService.AddContact(contact);
+
+        if (response is { Succeeded: false, Error: not null })
+            return Problem(detail: response.Error.Description,
+                statusCode: response.Error.Code);
+
+        return Ok();
     }
 }
