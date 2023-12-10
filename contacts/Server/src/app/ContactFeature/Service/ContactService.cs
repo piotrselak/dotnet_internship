@@ -4,6 +4,7 @@ using contacts.Server.CategoryFeature.Service;
 using contacts.Server.ContactFeature.Repository;
 using contacts.Shared;
 using contacts.Shared.Result;
+using Microsoft.EntityFrameworkCore;
 
 namespace contacts.Server.ContactFeature.Service;
 
@@ -90,7 +91,7 @@ public class ContactService : IContactService
             };
         contact.CategoryId = categoryResult.Data!.CategoryId;
         contact.SubCategoryId = categoryResult.Data!.SubCategoryId;
-        
+
         _repository.CreateContact(contact);
         await _repository.SaveAsync();
 
@@ -101,25 +102,41 @@ public class ContactService : IContactService
         };
     }
 
-    public async Task<Result<Empty>> UpdateContact(Contact contact)
+    public async Task<Result<Empty>> UpdateContact(Contact contact,
+        string? subCategoryName)
     {
-        // var existingContact = await _repository.GetContactById(contact.Id);
-        //
-        // if (existingContact == null)
-        //     return new Result<Empty>
-        //     {
-        //         Succeeded = false,
-        //         Error = new Error(404, "Contact not found")
-        //     };
-        //
-        // _repository.UpdateContact(contact);
-        // await _repository.SaveAsync();
-        //
-        // return new Result<Empty>()
-        // {
-        //     Succeeded = true,
-        //     Data = new Empty()
-        // };
-        throw new NotImplementedException();
+        var categoryResult =
+            await _categoryService.HandleCategoriesFromContact(
+                contact.CategoryId, contact.SubCategoryId, subCategoryName);
+
+        if (!categoryResult.Succeeded)
+            return new Result<Empty>
+            {
+                Succeeded = false,
+                Error = categoryResult.Error
+            };
+        contact.CategoryId = categoryResult.Data!.CategoryId;
+        contact.SubCategoryId = categoryResult.Data!.SubCategoryId;
+
+        try
+        {
+            _repository.UpdateContact(contact);
+            await _repository.SaveAsync();
+        }
+        catch (DbUpdateException e)
+        {
+            return new Result<Empty>
+            {
+                Succeeded = false,
+                Error = new Error(409,
+                    "Contact with given email already exists")
+            };
+        }
+
+        return new Result<Empty>()
+        {
+            Succeeded = true,
+            Data = new Empty()
+        };
     }
 }

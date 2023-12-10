@@ -11,5 +11,5 @@ public interface IContactService
     Task<Result<Contact>> GetContactDetails(int id);
     Task<Result<Empty>> RemoveContact(int id);
     Task<Result<Empty>> AddContact(Contact contact, string? subCategoryName);
-    Task<Result<Empty>> UpdateContact(Contact contact);
+    Task<Result<Empty>> UpdateContact(Contact contact, string? subCategoryName);
 }
