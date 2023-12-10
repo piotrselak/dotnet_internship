@@ -7,5 +7,5 @@ namespace contacts.Client.Services;
 public interface ICategoryService
 {
     Task<Result<AllCategoriesWithSub>> GetAllCategories();
-    Task<Result<Task>> CreateNewSubCategory(SubCategory subCategory);
+    Task<Result<int>> CreateNewSubCategory(SubCategory subCategory);
 }

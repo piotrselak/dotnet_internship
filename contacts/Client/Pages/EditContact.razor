@@ -1,5 +1,6 @@
 ﻿@page "/contact/{Id:int?}"
 @using contacts.Client.Domain
+@using contacts.Shared.Result
 @inject IContactService ContactService
 @inject ICategoryService CategoryService
 @inject ILogger<EditContact> Logger
@@ -148,7 +149,50 @@
 
     private async void FormSubmitted()
     {
-        Contact contactForSubmit = new Contact();
+        Contact contactForSubmit = new Contact
+        {
+            FirstName = _contact.FirstName,
+            LastName = _contact.LastName,
+            Email = _contact.Email,
+            Password = _contact.Password,
+            PhoneNumber = _contact.PhoneNumber,
+            BirthDate = _contact.BirthDate,
+            CategoryId = _contact.CategoryId,
+        };
+        Logger.LogInformation(_contact.CategoryId.ToString());
+    // if other is set
+        if (_contact.CategoryId == 3)
+        {
+            var cat = _categoriesWithSub.CategoryDictionary.Keys.First(e => e.Id == _contact.CategoryId);
+            var res = await CategoryService.CreateNewSubCategory(new SubCategory
+            { Name = _contact.SubCategory.Name, CategoryId = _contact.CategoryId, Category = cat });
+
+            if (!res.Succeeded)
+            {
+                _error = res.Error!.Description;
+                StateHasChanged();
+                return;
+            }
+            contactForSubmit.SubCategoryId = res.Data;
+        }
+        else
+        {
+            contactForSubmit.SubCategoryId = _contact.SubCategoryId;
+        }
+        Result<Empty> result;
+    // create
+        if (Id == null)
+        {
+        }
+    // update
+        else
+        {
+        }
+
+    // if (!result.Succeeded)
+    // {
+    //     _error = result.Error.Description;
+    // }
     }
 
 }

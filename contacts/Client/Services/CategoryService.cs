@@ -1,4 +1,6 @@
 ﻿using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 using contacts.Client.Domain;
 using contacts.Shared;
 using contacts.Shared.Result;
@@ -58,9 +60,28 @@ public class CategoryService : ICategoryService
         };
     }
 
-    public async Task<Result<Task>> CreateNewSubCategory(
+    // returns id
+    public async Task<Result<int>> CreateNewSubCategory(
         SubCategory subCategory)
     {
-        throw new NotImplementedException();
+        var stringContent = new StringContent(
+            JsonSerializer.Serialize(subCategory), Encoding.UTF8,
+            "application/json");
+        var res =
+            await _httpClient.PostAsync(
+                $"/api/Category/{subCategory.CategoryId}", stringContent);
+        if (!res.IsSuccessStatusCode)
+            return new Result<int>
+            {
+                Succeeded = false,
+                Error = new Error((int)res.StatusCode,
+                    (await res.Content.ReadFromJsonAsync<ErrorResponse>())!
+                    .Detail)
+            };
+        return new Result<int>
+        {
+            Succeeded = false,
+            Data = int.Parse(await res.Content.ReadAsStringAsync())
+        };
     }
 }

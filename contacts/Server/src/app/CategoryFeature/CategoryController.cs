@@ -53,12 +53,13 @@ public class CategoryController : ControllerBase
     public async Task<IActionResult> CreateSubCategory(
         [FromBody] SubCategory subCategory, int id)
     {
+        subCategory.CategoryId = id;
         var response = await _categoryService.CreateSubCategory(subCategory);
 
         if (response is { Succeeded: false, Error: not null })
             return Problem(detail: response.Error.Description,
                 statusCode: response.Error.Code);
 
-        return Ok();
+        return Ok(response.Data);
     }
 }

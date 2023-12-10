@@ -18,14 +18,19 @@ public class CategoryService : ICategoryService
         _logger = logger;
     }
 
-    public async Task<Result<Empty>> CreateSubCategory(SubCategory subCategory)
+    public async Task<Result<int>> CreateSubCategory(SubCategory subCategory)
     {
+        _logger.LogInformation(subCategory.Id.ToString());
+        _logger.LogInformation(subCategory.Name);
+        _logger.LogInformation(subCategory.CategoryId.ToString());
+        _logger.LogInformation((subCategory.Category == null).ToString());
         _subCategoryRepository.CreateSubCategory(subCategory);
         await _subCategoryRepository.SaveAsync();
-        return new Result<Empty>
+        return new Result<int>
         {
             Succeeded = true,
-            Data = new Empty(),
+            Data = ((await _subCategoryRepository.FindSubCategoryByName(
+                subCategory.Name))!).Id,
         };
     }
 

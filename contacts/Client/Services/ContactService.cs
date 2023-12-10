@@ -56,4 +56,14 @@ public class ContactService : IContactService
             Data = new Empty()
         };
     }
+
+    public async Task<Result<Empty>> CreateContact(Contact contact)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<Result<Empty>> UpdateContract(Contact contact)
+    {
+        throw new NotImplementedException();
+    }
 }
