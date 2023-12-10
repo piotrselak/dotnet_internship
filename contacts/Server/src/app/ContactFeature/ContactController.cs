@@ -50,25 +50,38 @@ public class ContactController : ControllerBase
         return Ok(response.Data);
     }
 
-    [Authorize]
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> UpdateContract([FromBody] Contact contact,
-        int id)
-    {
-        var response = await _contactService.UpdateContact(contact);
-
-        if (response is { Succeeded: false, Error: not null })
-            return Problem(detail: response.Error.Description,
-                statusCode: response.Error.Code);
-
-        return Ok();
-    }
+    // [Authorize]
+    // [HttpPut("{id:int}")]
+    // public async Task<IActionResult> UpdateContract([FromBody] Contact contact,
+    //     int id)
+    // {
+    //     var response = await _contactService.UpdateContact(contact);
+    //
+    //     if (response is { Succeeded: false, Error: not null })
+    //         return Problem(detail: response.Error.Description,
+    //             statusCode: response.Error.Code);
+    //
+    //     return Ok();
+    // }
 
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult> PostContract([FromBody] Contact contact)
+    public async Task<IActionResult> PostContract(
+        [FromBody] CreateContact contact)
     {
-        var response = await _contactService.AddContact(contact);
+        var validatedContact = new Contact
+        {
+            FirstName = contact.FirstName,
+            LastName = contact.LastName,
+            Email = contact.Email,
+            Password = contact.Password,
+            PhoneNumber = contact.PhoneNumber,
+            BirthDate = contact.BirthDate,
+            CategoryId = contact.CategoryId,
+            SubCategoryId = contact.SubCategoryId,
+        };
+        var response = await _contactService.AddContact(validatedContact,
+            contact.SubCategoryName);
 
         if (response is { Succeeded: false, Error: not null })
             return Problem(detail: response.Error.Description,

@@ -1,4 +1,7 @@
-﻿using contacts.Server.ContactFeature.Repository;
+﻿using contacts.Server.CategoryFeature;
+using contacts.Server.CategoryFeature.Repository;
+using contacts.Server.CategoryFeature.Service;
+using contacts.Server.ContactFeature.Repository;
 using contacts.Shared;
 using contacts.Shared.Result;
 
@@ -8,12 +11,14 @@ public class ContactService : IContactService
 {
     private readonly IContactRepository _repository;
     private readonly ILogger<ContactService> _logger;
+    private readonly ICategoryService _categoryService;
 
     public ContactService(IContactRepository repository,
-        ILogger<ContactService> logger)
+        ILogger<ContactService> logger, ICategoryService categoryService)
     {
         _repository = repository;
         _logger = logger;
+        _categoryService = categoryService;
     }
 
     public async Task<IEnumerable<BriefContact>> GetContactList()
@@ -61,7 +66,8 @@ public class ContactService : IContactService
         };
     }
 
-    public async Task<Result<Empty>> AddContact(Contact contact)
+    public async Task<Result<Empty>> AddContact(Contact contact,
+        string? subCategoryName)
     {
         var exists = await _repository.GetContactByEmail(contact.Email) != null;
         if (exists)
@@ -72,6 +78,19 @@ public class ContactService : IContactService
                     "Contact with given email already exists")
             };
 
+        var categoryResult =
+            await _categoryService.HandleCategoriesFromContact(
+                contact.CategoryId, contact.SubCategoryId, subCategoryName);
+
+        if (!categoryResult.Succeeded)
+            return new Result<Empty>
+            {
+                Succeeded = false,
+                Error = categoryResult.Error
+            };
+        contact.CategoryId = categoryResult.Data!.CategoryId;
+        contact.SubCategoryId = categoryResult.Data!.SubCategoryId;
+        
         _repository.CreateContact(contact);
         await _repository.SaveAsync();
 
@@ -84,22 +103,23 @@ public class ContactService : IContactService
 
     public async Task<Result<Empty>> UpdateContact(Contact contact)
     {
-        var existingContact = await _repository.GetContactById(contact.Id);
-
-        if (existingContact == null)
-            return new Result<Empty>
-            {
-                Succeeded = false,
-                Error = new Error(404, "Contact not found")
-            };
-
-        _repository.UpdateContact(contact);
-        await _repository.SaveAsync();
-
-        return new Result<Empty>()
-        {
-            Succeeded = true,
-            Data = new Empty()
-        };
+        // var existingContact = await _repository.GetContactById(contact.Id);
+        //
+        // if (existingContact == null)
+        //     return new Result<Empty>
+        //     {
+        //         Succeeded = false,
+        //         Error = new Error(404, "Contact not found")
+        //     };
+        //
+        // _repository.UpdateContact(contact);
+        // await _repository.SaveAsync();
+        //
+        // return new Result<Empty>()
+        // {
+        //     Succeeded = true,
+        //     Data = new Empty()
+        // };
+        throw new NotImplementedException();
     }
 }

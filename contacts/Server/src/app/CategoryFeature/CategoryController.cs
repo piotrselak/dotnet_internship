@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using contacts.Server.CategoryFeature.Service;
+using Microsoft.AspNetCore.Mvc;
 using contacts.Shared;
 using Microsoft.AspNetCore.Authorization;
 

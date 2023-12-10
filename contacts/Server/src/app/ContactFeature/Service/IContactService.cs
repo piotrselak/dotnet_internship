@@ -10,6 +10,6 @@ public interface IContactService
     Task<IEnumerable<BriefContact>> GetContactList();
     Task<Result<Contact>> GetContactDetails(int id);
     Task<Result<Empty>> RemoveContact(int id);
-    Task<Result<Empty>> AddContact(Contact contact);
+    Task<Result<Empty>> AddContact(Contact contact, string? subCategoryName);
     Task<Result<Empty>> UpdateContact(Contact contact);
 }
