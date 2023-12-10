@@ -59,29 +59,4 @@ public class CategoryService : ICategoryService
             }
         };
     }
-
-    // returns id
-    public async Task<Result<int>> CreateNewSubCategory(
-        SubCategory subCategory)
-    {
-        var stringContent = new StringContent(
-            JsonSerializer.Serialize(subCategory), Encoding.UTF8,
-            "application/json");
-        var res =
-            await _httpClient.PostAsync(
-                $"/api/Category/{subCategory.CategoryId}", stringContent);
-        if (!res.IsSuccessStatusCode)
-            return new Result<int>
-            {
-                Succeeded = false,
-                Error = new Error((int)res.StatusCode,
-                    (await res.Content.ReadFromJsonAsync<ErrorResponse>())!
-                    .Detail)
-            };
-        return new Result<int>
-        {
-            Succeeded = false,
-            Data = int.Parse(await res.Content.ReadAsStringAsync())
-        };
-    }
 }

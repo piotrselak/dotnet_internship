@@ -129,15 +129,21 @@
 
     private async void FormSubmitted()
     {
-        CreateContact contactForSubmit = new CreateContact
+        CreateContact contactFormForSubmit = new CreateContact
         {
-            
+            FirstName = _contact.FirstName,
+            LastName = _contact.LastName,
+            Email = _contact.Email,
+            Password = _contact.Password,
+            PhoneNumber = _contact.PhoneNumber,
+            BirthDate = _contact.BirthDate,
+            CategoryId = _contact.CategoryId,
+            SubCategoryId = _contact.SubCategoryId,
+            SubCategoryName = _contact.SubCategory.Name
         };
-        Logger.LogInformation(_contact.CategoryId.ToString());
+
         Result<Empty> res;
-
-
-        res = await ContactService.CreateNewContact(contactForSubmit);
+        res = await ContactService.CreateNewContact(contactFormForSubmit);
 
         if (res.Succeeded)
         {

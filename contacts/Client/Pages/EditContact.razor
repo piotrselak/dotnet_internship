@@ -1,9 +1,11 @@
-﻿@page "/contact/{Id:int?}"
+﻿@page "/contact/{Id:int}"
 @using contacts.Client.Domain
 @using contacts.Shared.Result
+@using System.ComponentModel
 @inject IContactService ContactService
 @inject ICategoryService CategoryService
 @inject ILogger<EditContact> Logger
+@inject NavigationManager NavigationManager
 <AuthorizeView>
     <Authorized>
         @if (loading)
@@ -13,7 +15,8 @@
         else
         {
             <div>
-                @if (!string.IsNullOrEmpty(_error))
+                <h3>Edit contact</h3>
+                @if (_error != "")
                 {
                     <div class="alert alert-danger" role="alert">
                         @_error
@@ -98,7 +101,7 @@
     bool loading = true;
 
     [Parameter]
-    public int? Id { get; set; }
+    public int Id { get; set; }
 
     private IEnumerable<SubCategory> FindSubCategories(int categoryId)
     {
@@ -123,25 +126,16 @@
         }
         _categoriesWithSub = res.Data!;
 
-
-    // Create new contact
-        if (Id == null)
+        var result = await ContactService.GetContactById(Id);
+        if (!result.Succeeded)
         {
+            _error = result.Error!.Description;
         }
-    // Edit existing
         else
         {
-            int id = (int)Id!;
-            var result = await ContactService.GetContactById(id);
-            if (!result.Succeeded)
-            {
-                _error = result.Error!.Description;
-            }
-            else
-            {
-                _contact = result.Data!;
-            }
-            StateHasChanged();
+            _contact = result.Data!;
+            if (_contact.SubCategory == null) _contact.SubCategory = new SubCategory();
+            if (_contact.SubCategoryId == null) _contact.SubCategoryId = 0;
         }
         loading = false;
         StateHasChanged();
@@ -149,7 +143,7 @@
 
     private async void FormSubmitted()
     {
-        Contact contactForSubmit = new Contact
+        CreateContact contactForSubmit = new CreateContact
         {
             FirstName = _contact.FirstName,
             LastName = _contact.LastName,
@@ -158,41 +152,22 @@
             PhoneNumber = _contact.PhoneNumber,
             BirthDate = _contact.BirthDate,
             CategoryId = _contact.CategoryId,
+            SubCategoryId = _contact.SubCategoryId,
+            SubCategoryName = _contact.SubCategory.Name,
         };
-        Logger.LogInformation(_contact.CategoryId.ToString());
-    // if other is set
-        if (_contact.CategoryId == 3)
-        {
-            var cat = _categoriesWithSub.CategoryDictionary.Keys.First(e => e.Id == _contact.CategoryId);
-            var res = await CategoryService.CreateNewSubCategory(new SubCategory
-            { Name = _contact.SubCategory.Name, CategoryId = _contact.CategoryId, Category = cat });
 
-            if (!res.Succeeded)
-            {
-                _error = res.Error!.Description;
-                StateHasChanged();
-                return;
-            }
-            contactForSubmit.SubCategoryId = res.Data;
+        Result<Empty> res = await ContactService.UpdateContract(contactForSubmit, Id);
+        Logger.LogInformation(res.Succeeded.ToString());
+        if (res.Succeeded)
+        {
+            NavigationManager.NavigateTo("/list");
         }
         else
         {
-            contactForSubmit.SubCategoryId = _contact.SubCategoryId;
+            _error = res.Error!.Description;
+            Logger.LogInformation(res.Error.Description);
+            StateHasChanged();
         }
-        Result<Empty> result;
-    // create
-        if (Id == null)
-        {
-        }
-    // update
-        else
-        {
-        }
-
-    // if (!result.Succeeded)
-    // {
-    //     _error = result.Error.Description;
-    // }
     }
 
 }
