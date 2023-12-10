@@ -1,11 +1,9 @@
 using System.Text;
 using contacts.Server.Auth;
-using contacts.Server.CategoryFeature;
-using contacts.Server.CategoryFeature.Repository;
-using contacts.Server.CategoryFeature.Service;
-using contacts.Server.ContactFeature;
-using contacts.Server.ContactFeature.Repository;
-using contacts.Server.ContactFeature.Service;
+using contacts.Server.Categories.Repository;
+using contacts.Server.Categories.Service;
+using contacts.Server.Contacts.Repository;
+using contacts.Server.Contacts.Service;
 using contacts.Server.Database;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;

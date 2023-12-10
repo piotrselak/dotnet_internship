@@ -1,6 +1,6 @@
 ﻿using contacts.Shared;
 
-namespace contacts.Server.CategoryFeature.Repository;
+namespace contacts.Server.Categories.Repository;
 
 public interface ISubCategoryRepository : IDisposable
 {

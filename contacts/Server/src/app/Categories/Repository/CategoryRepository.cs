@@ -2,7 +2,7 @@
 using contacts.Shared;
 using Microsoft.EntityFrameworkCore;
 
-namespace contacts.Server.CategoryFeature.Repository;
+namespace contacts.Server.Categories.Repository;
 
 public class CategoryRepository : ICategoryRepository
 {

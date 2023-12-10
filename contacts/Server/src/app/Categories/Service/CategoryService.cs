@@ -1,9 +1,9 @@
-﻿using contacts.Server.CategoryFeature.Dto;
-using contacts.Server.CategoryFeature.Repository;
+﻿using contacts.Server.Categories.Dto;
+using contacts.Server.Categories.Repository;
 using contacts.Shared;
 using contacts.Shared.Result;
 
-namespace contacts.Server.CategoryFeature.Service;
+namespace contacts.Server.Categories.Service;
 
 public class CategoryService : ICategoryService
 {

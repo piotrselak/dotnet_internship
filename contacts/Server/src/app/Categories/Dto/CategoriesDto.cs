@@ -1,4 +1,4 @@
-﻿namespace contacts.Server.CategoryFeature.Dto;
+﻿namespace contacts.Server.Categories.Dto;
 
 public class CategoriesDto
 {
