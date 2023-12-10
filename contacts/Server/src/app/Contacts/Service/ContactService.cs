@@ -36,7 +36,7 @@ public class ContactService : IContactService
                 Succeeded = false,
                 Error = new Error(404, "Contact not found")
             };
-        _logger.LogInformation(contact.Category.Name);
+
         return new Result<Contact>
         {
             Succeeded = true,
@@ -58,7 +58,7 @@ public class ContactService : IContactService
         _repository.DeleteContact(contact);
         await _repository.SaveAsync();
 
-        return new Result<Empty>()
+        return new Result<Empty>
         {
             Succeeded = true,
             Data = new Empty()
@@ -123,7 +123,6 @@ public class ContactService : IContactService
         }
         catch (DbUpdateException e)
         {
-            _logger.LogInformation("Yep");
             return new Result<Empty>
             {
                 Succeeded = false,

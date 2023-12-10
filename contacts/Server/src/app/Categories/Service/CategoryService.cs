@@ -22,10 +22,6 @@ public class CategoryService : ICategoryService
 
     public async Task<Result<int>> CreateSubCategory(SubCategory subCategory)
     {
-        _logger.LogInformation(subCategory.Id.ToString());
-        _logger.LogInformation(subCategory.Name);
-        _logger.LogInformation(subCategory.CategoryId.ToString());
-        _logger.LogInformation((subCategory.Category == null).ToString());
         _subCategoryRepository.CreateSubCategory(subCategory);
         await _subCategoryRepository.SaveAsync();
         return new Result<int>
@@ -103,15 +99,25 @@ public class CategoryService : ICategoryService
                         Error = new Error(400,
                             "Neither subcategory was passed nor its name")
                     };
-                _subCategoryRepository.CreateSubCategory(new SubCategory
+                var subByName = await
+                    _subCategoryRepository.FindSubCategoryByName(
+                        subCategoryName);
+                if (subByName == null)
                 {
-                    Name = subCategoryName,
-                    CategoryId = categoryId,
-                });
-                await _subCategoryRepository.SaveAsync();
-                finalSubCategoryId =
-                    (await _subCategoryRepository.FindSubCategoryByName(
-                        subCategoryName))!.Id;
+                    _subCategoryRepository.CreateSubCategory(new SubCategory
+                    {
+                        Name = subCategoryName,
+                        CategoryId = categoryId,
+                    });
+                    await _subCategoryRepository.SaveAsync();
+                    finalSubCategoryId =
+                        (await _subCategoryRepository.FindSubCategoryByName(
+                            subCategoryName))!.Id;
+                }
+                else
+                {
+                    finalSubCategoryId = subByName.Id;
+                }
             }
         }
         else

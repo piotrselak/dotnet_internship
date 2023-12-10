@@ -43,7 +43,7 @@ public class CategoryController : ControllerBase
             return Problem(detail: response.Error.Description,
                 statusCode: response.Error.Code);
 
-        _logger.LogInformation("Returning result with categories of size " +
+        _logger.LogInformation("Returning result with subcategories of size " +
                                response.Data!.ToList().Count);
         return Ok(response.Data);
     }
