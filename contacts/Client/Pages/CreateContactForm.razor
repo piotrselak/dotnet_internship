@@ -1,14 +1,13 @@
 ﻿@page "/contact"
 @using contacts.Client.Domain
 @using contacts.Shared.Result
-@using System.ComponentModel
 @inject IContactService ContactService
 @inject ICategoryService CategoryService
-@inject ILogger<EditContact> Logger
+@inject ILogger<EditContactForm> Logger
 @inject NavigationManager NavigationManager
 <AuthorizeView>
     <Authorized>
-        @if (loading)
+        @if (_loading)
         {
             <h3>Please wait...</h3>
         }
@@ -45,7 +44,7 @@
 
                     <div class="form-group">
                         <label for="phoneNumber">Phone Number:</label>
-                        <InputText @bind-Value="_contact.PhoneNumber" id="phoneNumber" class="form-control"/>
+                        <InputText min="1900-01-01" @bind-Value="_contact.PhoneNumber" id="phoneNumber" class="form-control"/>
                     </div>
 
                     <div class="form-group">
@@ -68,7 +67,7 @@
                             <label for="subcategory">Sub category:</label>
                             @if (_contact.CategoryId == 3)
                             {
-                                <InputText @bind-Value="_contact.SubCategory.Name" id="subcategory" class="form-control"/>
+                                <InputText @bind-Value="_contact.SubCategoryName" id="subcategory" class="form-control"/>
                             }
                             else
                             {
@@ -94,11 +93,13 @@
 @code {
     AllCategoriesWithSub _categoriesWithSub = new AllCategoriesWithSub();
 
-    Contact _contact = new Contact
-    { CategoryId = 0, Category = new Category(), SubCategoryId = null, SubCategory = new SubCategory() };
+    CreateContact _contact = new CreateContact
+    {
+        CategoryId = 0
+    };
 
     string _error = "";
-    bool loading = true;
+    bool _loading = true;
 
     private IEnumerable<SubCategory> FindSubCategories(int categoryId)
     {
@@ -107,53 +108,42 @@
         return _categoriesWithSub.CategoryDictionary[category];
     }
 
-    private bool CheckIfOther()
-    {
-        return _categoriesWithSub.CategoryDictionary.Keys.FirstOrDefault(e => e.Id == _contact.CategoryId)?.Name == "Other";
-    }
-
     protected override async void OnInitialized()
     {
         var res = await CategoryService.GetAllCategories();
         if (!res.Succeeded)
         {
-            _error = res.Error.Description;
+            _error = res.Error!.Description;
             Logger.LogInformation("Error! " + res.Error.Description);
             return;
         }
         _categoriesWithSub = res.Data!;
 
-        loading = false;
+        _loading = false;
         StateHasChanged();
     }
 
     private async void FormSubmitted()
     {
-        CreateContact contactFormForSubmit = new CreateContact
+        if (_contact.CategoryId == 0)
         {
-            FirstName = _contact.FirstName,
-            LastName = _contact.LastName,
-            Email = _contact.Email,
-            Password = _contact.Password,
-            PhoneNumber = _contact.PhoneNumber,
-            BirthDate = _contact.BirthDate,
-            CategoryId = _contact.CategoryId,
-            SubCategoryId = _contact.SubCategoryId,
-            SubCategoryName = _contact.SubCategory.Name
-        };
-
-        Result<Empty> res;
-        res = await ContactService.CreateNewContact(contactFormForSubmit);
-
-        if (res.Succeeded)
-        {
-            NavigationManager.NavigateTo("/list");
+            _error = "You have to set category.";
+            StateHasChanged();
         }
         else
         {
-            _error = res.Error!.Description;
-            Logger.LogInformation(res.Error.Description);
-            StateHasChanged();
+            Result<Empty> res = await ContactService.CreateNewContact(_contact);
+
+            if (res.Succeeded)
+            {
+                NavigationManager.NavigateTo("/list");
+            }
+            else
+            {
+                _error = res.Error!.Description;
+                Logger.LogInformation(res.Error.Description);
+                StateHasChanged();
+            }
         }
     }
 

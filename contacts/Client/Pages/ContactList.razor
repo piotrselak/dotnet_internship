@@ -1,38 +1,45 @@
 ﻿@page "/list"
-@using contacts.Client.Services
-@using contacts.Shared
 @inject IContactService ContactService
 
 <div>
     <h3>Contact List</h3>
-    <ul>
-        @foreach (var contact in _contacts)
-        {
-            <li>
-                <p>
-                    @contact.FirstName
-                    @contact.LastName
-                    @contact.Email
-                    <a href="/list/@contact.Id">Details</a>
-                    <AuthorizeView>
-                        <Authorized>
-                            <a href="/contact/@contact.Id">Modify</a>
-                            <button @onclick="@(() => DeleteContact(contact.Id))">Delete</button>
-                        </Authorized>
-                    </AuthorizeView>
-                </p>
-            </li>
-        }
-    </ul>
+    @if (_loading)
+    {
+        <h3>Please wait..</h3>
+    }
+    else
+    {
+        <ul>
+            @foreach (var contact in _contacts)
+            {
+                <li>
+                    <p>
+                        @contact.FirstName
+                        @contact.LastName
+                        @contact.Email
+                        <a href="/list/@contact.Id">Details</a>
+                        <AuthorizeView>
+                            <Authorized>
+                                <a href="/contact/@contact.Id">Modify</a>
+                                <button @onclick="@(() => DeleteContact(contact.Id))">Delete</button>
+                            </Authorized>
+                        </AuthorizeView>
+                    </p>
+                </li>
+            }
+        </ul>
+    }
 </div>
 
 
 @code {
     private IEnumerable<BriefContact> _contacts;
+    bool _loading = true;
 
     protected override async Task OnInitializedAsync()
     {
         _contacts = await ContactService.GetContacts();
+        _loading = false;
     }
 
     private async void DeleteContact(int id)
