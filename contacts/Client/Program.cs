@@ -19,5 +19,6 @@ builder.Services
         ContactsAuthenticationStateProvider>();
 builder.Services.AddScoped<IContactService, ContactService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 await builder.Build().RunAsync();

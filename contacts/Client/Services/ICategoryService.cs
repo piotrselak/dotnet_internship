@@ -1,6 +1,11 @@
-﻿namespace contacts.Client.Services;
+﻿using contacts.Client.Domain;
+using contacts.Shared;
+using contacts.Shared.Result;
 
-public class ICategoryService
+namespace contacts.Client.Services;
+
+public interface ICategoryService
 {
-    
+    Task<Result<AllCategoriesWithSub>> GetAllCategories();
+    Task<Result<Task>> CreateNewSubCategory(SubCategory subCategory);
 }
