@@ -1,8 +1,33 @@
 ﻿# Contacts recruitment task
 
-## How to run?
+## How to run it?
 
-## Used libraries
+First run command given below in the root directory.
+```
+docker-compose up -d
+```
+If you don't want to use docker, you can install PostgreSQL
+locally, but remember to change the connection string in appsettings.json in Server project.
+
+Now go to the ./contacts/Server directory. Type:
+```
+dotnet ef database update --context ContactsContext
+dotnet ef database update --context AuthContext
+```
+Those comments run EF database migrations, which will
+create all needed tables and populate them with some data.
+
+Now, still in the Server directory, run:
+```
+dotnet run
+```
+
+Application should be up and running :)
+
+## Tech stack
+Application is written in ASP.NET CORE using Entity Framework Core,
+Blazored LocalStorage, Npgsql for PostgreSQL EntityFramework support,
+ASP.NET Core Identity, JwtBearer, Blazor WebAssembly.
 
 ## Short description
 The solution consists of three projects: Server, Shared and Client.
