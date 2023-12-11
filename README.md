@@ -9,6 +9,11 @@ docker-compose up -d
 If you don't want to use docker, you can install PostgreSQL
 locally, but remember to change the connection string in appsettings.json in Server project.
 
+```
+dotnet restore
+```
+Will fetch all needed packages.
+
 Now go to the ./contacts/Server directory. Type:
 ```
 dotnet ef database update --context ContactsContext
