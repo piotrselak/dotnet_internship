@@ -42,6 +42,16 @@ public class CategoryService : ICategoryService
         };
     }
 
+    // This method looks messy so explanation:
+    // As the subcategory isn't required and the user can create it in some cases
+    // (when choosing "Other" as main category), we may want to reuse
+    // some already created. If one user typed "Friend", we don't want another
+    // creating the same subcategory. 
+    // Also some subcategories can be chosen (they are kind of an enum)
+    // so in this case we get id of the subcategory instead of the name.
+    // This method checks all of those cases and returns proper result.
+    // If needed it creates new subcategory, or looks through existing ones
+    // which are assigned to the category id.
     public async Task<Result<CategoriesDto>> HandleCategoriesFromContact(
         int categoryId, int? subCategoryId, string? subCategoryName)
     {
