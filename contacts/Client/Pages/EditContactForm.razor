@@ -1,14 +1,13 @@
 ﻿@page "/contact/{Id:int}"
 @using contacts.Client.Domain
 @using contacts.Shared.Result
-@using System.ComponentModel
 @inject IContactService ContactService
 @inject ICategoryService CategoryService
 @inject ILogger<EditContactForm> Logger
 @inject NavigationManager NavigationManager
 <AuthorizeView>
     <Authorized>
-        @if (loading)
+        @if (_loading)
         {
             <h3>Please wait...</h3>
         }
@@ -25,37 +24,37 @@
                 <EditForm Context="formContext" Model="@_contact" OnSubmit="@FormSubmitted">
                     <div class="form-group">
                         <label for="firstName">First Name:</label>
-                        <InputText @bind-Value="_contact.FirstName" id="firstName" class="form-control"/>
+                        <InputText @bind-Value="_contact!.FirstName" id="firstName" class="form-control"/>
                     </div>
 
                     <div class="form-group">
                         <label for="lastName">Last Name:</label>
-                        <InputText @bind-Value="_contact.LastName" id="lastName" class="form-control"/>
+                        <InputText @bind-Value="_contact!.LastName" id="lastName" class="form-control"/>
                     </div>
 
                     <div class="form-group">
                         <label for="email">Email:</label>
-                        <InputText @bind-Value="_contact.Email" id="email" class="form-control"/>
+                        <InputText @bind-Value="_contact!.Email" id="email" class="form-control"/>
                     </div>
 
                     <div class="form-group">
                         <label for="password">Password:</label>
-                        <InputText @bind-Value="_contact.Password" id="password" class="form-control"/>
+                        <InputText @bind-Value="_contact!.Password" id="password" class="form-control"/>
                     </div>
 
                     <div class="form-group">
                         <label for="phoneNumber">Phone Number:</label>
-                        <InputText @bind-Value="_contact.PhoneNumber" id="phoneNumber" class="form-control"/>
+                        <InputText min="1900-01-01" @bind-Value="_contact!.PhoneNumber" id="phoneNumber" class="form-control"/>
                     </div>
 
                     <div class="form-group">
                         <label for="birthDate">Birth Date:</label>
-                        <InputDate @bind-Value="_contact.BirthDate" id="birthDate" class="form-control"/>
+                        <InputDate @bind-Value="_contact!.BirthDate" id="birthDate" class="form-control"/>
                     </div>
 
                     <div class="form-group">
                         <label for="category">Category:</label>
-                        <select id="category" @bind="_contact.CategoryId">
+                        <select id="category" @bind="_contact!.CategoryId">
                             @foreach (var c in _categoriesWithSub.CategoryDictionary.Keys)
                             {
                                 <option value=@c.Id>@c.Name</option>
@@ -68,7 +67,7 @@
                             <label for="subcategory">Sub category:</label>
                             @if (_contact.CategoryId == 3)
                             {
-                                <InputText @bind-Value="_contact.SubCategory.Name" id="subcategory" class="form-control"/>
+                                <InputText @bind-Value="_contact.SubCategoryName" id="subcategory" class="form-control"/>
                             }
                             else
                             {
@@ -94,11 +93,10 @@
 @code {
     AllCategoriesWithSub _categoriesWithSub = new AllCategoriesWithSub();
 
-    Contact _contact = new Contact
-    { CategoryId = 0, Category = new Category(), SubCategoryId = null, SubCategory = new SubCategory() };
+    CreateContact? _contact;
 
     string _error = "";
-    bool loading = true;
+    bool _loading = true;
 
     [Parameter]
     public int Id { get; set; }
@@ -110,17 +108,12 @@
         return _categoriesWithSub.CategoryDictionary[category];
     }
 
-    private bool CheckIfOther()
-    {
-        return _categoriesWithSub.CategoryDictionary.Keys.FirstOrDefault(e => e.Id == _contact.CategoryId)?.Name == "Other";
-    }
-
     protected override async void OnInitialized()
     {
         var res = await CategoryService.GetAllCategories();
         if (!res.Succeeded)
         {
-            _error = res.Error.Description;
+            _error = res.Error!.Description;
             Logger.LogInformation("Error! " + res.Error.Description);
             return;
         }
@@ -133,31 +126,44 @@
         }
         else
         {
-            _contact = result.Data!;
-            if (_contact.SubCategory == null) _contact.SubCategory = new SubCategory();
-            if (_contact.SubCategoryId == null) _contact.SubCategoryId = 0;
+            var data = result.Data!;
+            string? subCategoryName = null;
+            if (data.SubCategory != null)
+                subCategoryName = data.SubCategory.Name;
+
+            _contact = new CreateContact
+            {
+                FirstName = data.FirstName,
+                LastName = data.LastName,
+                Email = data.Email,
+                Password = data.Password,
+                PhoneNumber = data.PhoneNumber,
+                BirthDate = data.BirthDate,
+                CategoryId = data.CategoryId,
+                SubCategoryId = data.SubCategoryId,
+                SubCategoryName = subCategoryName
+            };
         }
-        loading = false;
+        _loading = false;
         StateHasChanged();
     }
 
     private async void FormSubmitted()
     {
-        CreateContact contactForSubmit = new CreateContact
+        if (_contact!.CategoryId == 0)
         {
-            FirstName = _contact.FirstName,
-            LastName = _contact.LastName,
-            Email = _contact.Email,
-            Password = _contact.Password,
-            PhoneNumber = _contact.PhoneNumber,
-            BirthDate = _contact.BirthDate,
-            CategoryId = _contact.CategoryId,
-            SubCategoryId = _contact.SubCategoryId,
-            SubCategoryName = _contact.SubCategory.Name,
-        };
+            _error = "You have to set category.";
+            StateHasChanged();
+            return;
+        }
+        if (!string.IsNullOrEmpty(_contact.SubCategoryName))
+            _contact.SubCategoryId = null;
+        if (!string.IsNullOrEmpty(_contact.SubCategoryId.ToString()))
+            _contact.SubCategoryName = null;
 
-        Result<Empty> res = await ContactService.UpdateContract(contactForSubmit, Id);
+        Result<Empty> res = await ContactService.UpdateContract(_contact!, Id);
         Logger.LogInformation(res.Succeeded.ToString());
+
         if (res.Succeeded)
         {
             NavigationManager.NavigateTo("/list");

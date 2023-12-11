@@ -6,7 +6,6 @@ namespace contacts.Server.Categories.Service;
 
 public interface ICategoryService
 {
-    Task<Result<int>> CreateSubCategory(SubCategory subCategory);
     Task<Result<IEnumerable<Category>>> GetAllCategories();
     Task<Result<IEnumerable<SubCategory>>> GetAllSubCategories();
 

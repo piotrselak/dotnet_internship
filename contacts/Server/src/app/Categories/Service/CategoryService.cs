@@ -20,18 +20,6 @@ public class CategoryService : ICategoryService
         _logger = logger;
     }
 
-    public async Task<Result<int>> CreateSubCategory(SubCategory subCategory)
-    {
-        _subCategoryRepository.CreateSubCategory(subCategory);
-        await _subCategoryRepository.SaveAsync();
-        return new Result<int>
-        {
-            Succeeded = true,
-            Data = ((await _subCategoryRepository.FindSubCategoryByName(
-                subCategory.Name))!).Id,
-        };
-    }
-
     public async Task<Result<IEnumerable<Category>>> GetAllCategories()
     {
         var categories = await _categoryRepository.GetAllCategories();
@@ -101,7 +89,7 @@ public class CategoryService : ICategoryService
                     };
                 var subByName = await
                     _subCategoryRepository.FindSubCategoryByName(
-                        subCategoryName);
+                        subCategoryName, categoryId);
                 if (subByName == null)
                 {
                     _subCategoryRepository.CreateSubCategory(new SubCategory
@@ -112,7 +100,7 @@ public class CategoryService : ICategoryService
                     await _subCategoryRepository.SaveAsync();
                     finalSubCategoryId =
                         (await _subCategoryRepository.FindSubCategoryByName(
-                            subCategoryName))!.Id;
+                            subCategoryName, categoryId))!.Id;
                 }
                 else
                 {

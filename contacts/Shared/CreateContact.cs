@@ -4,9 +4,9 @@ namespace contacts.Shared;
 
 public class CreateContact
 {
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string Email { get; set; }
+    [Required] public string FirstName { get; set; }
+    [Required] public string LastName { get; set; }
+    [Required] public string Email { get; set; }
 
     [StringLength(100,
         ErrorMessage = "The {0} must be at least {2} characters long.",
@@ -14,11 +14,12 @@ public class CreateContact
     [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$",
         ErrorMessage =
             "Password must contain at least one uppercase letter, one lowercase letter, and one digit.")]
+    [Required]
     public string Password { get; set; }
 
-    public string PhoneNumber { get; set; }
-    public DateOnly BirthDate { get; set; }
-    public int CategoryId { get; set; }
+    [Required] public string PhoneNumber { get; set; }
+    [Required] public DateOnly BirthDate { get; set; }
+    [Required] public int CategoryId { get; set; }
 
     public int? SubCategoryId { get; set; }
 

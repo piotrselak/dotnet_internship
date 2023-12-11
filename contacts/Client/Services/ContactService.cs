@@ -69,19 +69,12 @@ public class ContactService : IContactService
         var res = await _httpClient.PostAsync($"api/Contact/", stringContent);
         if (!res.IsSuccessStatusCode)
         {
-            var parsed =
-                await res.Content
-                    .ReadFromJsonAsync<ErrorResponseValidation>();
-            string errors = "";
-            foreach (var (key, value) in parsed!.Errors)
-            {
-                errors += key + ": " + string.Join(", ", value);
-            }
+            var error = await ParseError(res.Content);
 
             return new Result<Empty>
             {
                 Succeeded = false,
-                Error = new Error((int)res.StatusCode, errors)
+                Error = error
             };
         }
 
@@ -104,31 +97,11 @@ public class ContactService : IContactService
 
         if (!res.IsSuccessStatusCode)
         {
-            _logger.LogInformation("Updating failed.");
-            // var parsed =
-            //     await res.Content
-            //         .ReadFromJsonAsync<ErrorResponseValidation>();
-            string errors = "";
-            // if (parsed != null && parsed.Errors.Count > 0)
-            // {
-            //     _logger.LogInformation("ValidationResponseError");
-            //     foreach (var (key, value) in parsed!.Errors)
-            //     {
-            //         errors += key + ": " + string.Join(", ", value);
-            //     }
-            // }
-            // else
-            // {
-            _logger.LogInformation("Not VRE");
-            errors = (await res.Content
-                .ReadFromJsonAsync<ErrorResponse>())!.Detail;
-            // }
-
-            _logger.LogInformation(errors);
+            var error = await ParseError(res.Content);
             return new Result<Empty>
             {
                 Succeeded = false,
-                Error = new Error((int)res.StatusCode, errors)
+                Error = error
             };
         }
 
@@ -137,5 +110,33 @@ public class ContactService : IContactService
             Succeeded = true,
             Data = new Empty()
         };
+    }
+
+    private async Task<Error> ParseError(HttpContent errorContent)
+    {
+        var parsed =
+            await errorContent.ReadFromJsonAsync<ErrorResponseValidation>();
+
+        if (parsed != null)
+        {
+            _logger.LogInformation("Parsed to ErrorResponseValidation");
+            string errors = "";
+
+            foreach (var (key, value) in parsed!.Errors)
+            {
+                errors += key + ": " + string.Join(" ", value) + " ";
+            }
+
+            return new Error(0, errors);
+        }
+
+        var parsed2 = await errorContent.ReadFromJsonAsync<ErrorResponse>();
+        if (parsed2 != null)
+        {
+            _logger.LogInformation("Parsed to ErrorResponse");
+            return new Error(0, parsed2.Detail);
+        }
+
+        throw new Exception("Could not parse validation error!");
     }
 }
