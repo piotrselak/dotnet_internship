@@ -12,7 +12,7 @@ locally, but remember to change the connection string in appsettings.json in Ser
 ```
 dotnet restore
 ```
-Will fetch all needed packages.
+This will fetch all needed packages.
 
 Now go to the ./contacts/Server directory. Type:
 ```
